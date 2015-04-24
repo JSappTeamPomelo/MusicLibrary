@@ -1,0 +1,18 @@
+<div id="songs">
+    <ul>
+        {{#results}}
+        <li data-id="{{objectId}}">
+            <div>Song: <a href="{{song.url}}">{{song.url}}</a></div>
+            <div>Title: {{title}}</div>
+            <div>Like: {{like}}</div>
+            <button class="like-songs-btn">Like</button>
+            <button class="delete-songs-btn">X</button>
+        </li>
+        {{/results}}
+    </ul>
+    <div id="create-song-btn">
+        <input type="file" id="song"/>
+        <input type="text" id="title"/>
+        <button id="create-song">Add Song</button>
+    </div>
+</div>
