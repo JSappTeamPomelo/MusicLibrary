@@ -41,11 +41,11 @@
                                 <span class="glyphicon glyphicon-user" style="font-size: 25px;"></span>
                             </a>
                             <div class="dropdown-menu dropdown-settings">
-                                <hr />
-                                <h5><strong>Name opa :D </strong></h5>
-                                tuka trqq da ima ime
-                                <hr />
-                                <a href="#" class="btn btn-info btn-sm">View my songs</a>&nbsp; <a href="#" class="btn btn-danger btn-sm">Logout</a>
+                                <ul>
+                                    <div id="currentUser"></div>
+                                    <li id="login" class="btn btn-info btn-sm"><a href="#/login">Login</a></li>
+                                    <li id="register" class="btn btn-info btn-sm"><a href="#/register">Register</a></li>
+                                </ul>
 
                             </div>
                         </li>
@@ -63,10 +63,9 @@
                 <div class="col-md-12">
                     <div class="navbar-collapse collapse ">
                         <ul id="menu-top" class="nav navbar-nav navbar-right">
-                            <li><a class="menu-top-active" href="#">All songs</a></li>
+                            <li id="Songs"><a class="menu-top-active" href="#/songs">All songs</a></li>
                             <li><a href="#">Genres</a></li>
                             <li><a href="#">Playlists</a></li>
-
                         </ul>
                     </div>
                 </div>
@@ -75,7 +74,7 @@
         </div>
     </section>
     <div class="content-wrapper">
-
+        <div id="wrapper"></div>
     </div>
     <footer>
         <div class="container">
@@ -87,7 +86,20 @@
             </div>
         </div>
     </footer>
-    <script src="assets/js/jquery-1.11.1.js"></script>
+
+
+    <script src="https://code.jquery.com/jquery-1.11.2.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sammy.js/0.7.6/sammy.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/q.js/0.9.2/q.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mustache.js/0.8.1/mustache.min.js"></script>
+    <!--<script src="https//cdnjs.cloudflare.com/ajax/libs/jquery-noty/2.3.5/jquery.noty.min.js"></script>-->
+
+    <script src="script/ajax-requester.js"></script>
+    <script src="script/data.js"></script>
+    <script src="script/controller.js"></script>
+    <script src="script/app.js"></script>
+    
     <script src="assets/js/bootstrap.js"></script>
+
 </body>
 </html>
