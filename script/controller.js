@@ -4,6 +4,10 @@ app.controller=(function(){
     function BaseController(data){
         this._data=data;
     }
+    var queryString='';
+    BaseController.prototype.loadGenres=function(selector){
+        $(selector).load('./templates/genre.html')
+    }
 
     BaseController.prototype.loadHome=function(selector){
         $(selector).load('./templates/home.html')
@@ -17,7 +21,7 @@ app.controller=(function(){
         $(selector).load('./templates/register.html')
     }
     BaseController.prototype.loadSongs=function(selector){
-        this._data.songs.getAll()
+        this._data.songs.getAll(queryString)
             .then(function(data){
                 $.get('./templates/songs.html',function(template){
                     var output=Mustache.render(template,data);
@@ -35,7 +39,11 @@ app.controller=(function(){
         attachDeleteSongHandler.call(this,selector);
         attachLikeSongHandler.call(this,selector);
         attachLogoutHandler.call(this,otherSelector)
+        attachGetSongByGenre.call(this,selector)
     }
+
+
+
 
     var attachLogoutHandler=function(selector){
         $(selector).on('click','#logout',function(){
@@ -96,11 +104,12 @@ app.controller=(function(){
         $(selector).on('click','#create-song',function(ev){
             var title=$('#title').val();
             var songFile=$('#song').val();
-
+            var genre=$('#genre').val()
             var song={
                 songFile:songFile,
                 title:title,
-                like:0
+                like:0,
+                genre:genre
 
             }
             _this._data.songs.add(song)
@@ -131,6 +140,24 @@ app.controller=(function(){
                 })
         }
 
+    }
+
+    var attachGetSongByGenre=function(selector){
+        var _this=this;
+        $(selector).on('click','#choose-genre',function(){
+            var genre=$('#genre-choose').val();
+//            var stringGenre=""+genre;
+            var queryString='?where={"genre":"' + genre + '"}';
+            _this._data.songs.getAll(queryString)
+                .then(function(data){
+                    $.get('./templates/genreSong.html',function(template){
+                    var output=Mustache.render(template,data);
+                    $(selector).html(output);
+                })
+                },function(error){
+                    console.log(error)
+                })
+        })
     }
 
 

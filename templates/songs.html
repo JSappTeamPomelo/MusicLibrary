@@ -5,6 +5,7 @@
             <div>Song: <a href="{{song.url}}">{{song.url}}</a></div>
             <div>Title: {{title}}</div>
             <div>Like: {{like}}</div>
+            <div>Genre: {{genre}}</div>
             <button class="like-songs-btn">Like</button>
             <button class="delete-songs-btn">X</button>
         </li>
@@ -12,7 +13,14 @@
     </ul>
     <div id="create-song-btn">
         <input type="file" id="song"/>
-        <input type="text" id="title"/>
+        <input type="text" id="title" placeholder="Enter title"/>
+        <select id="genre">
+            <option value="rock">Rock</option>
+            <option value="disco">Disco</option>
+            <option value="pop">Pop</option>
+            <option value="pop-folk">Pop-folk</option>
+        </select>
+        <!--<input type="text" id="genre" placeholder="Enter genre"/>-->
         <button id="create-song">Add Song</button>
     </div>
 </div>

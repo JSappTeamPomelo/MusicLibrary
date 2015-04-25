@@ -8,8 +8,8 @@ app.data=(function(){
 
     var cradentials=(function(){
         var headers={
-            "X-Parse-Application-Id":"NInepsto7D88N6imyYYsnEbDjEJWcYsKj8WPtxCG",
-            "X-Parse-REST-API-Key":"d3WxJ6c68zuO0KvhcBlyX3LzltXWepViQB2o6hf4",
+            "X-Parse-Application-Id":"kzEIfMrBQhYADbSmJqYiJg6XHjGotOHL2nhmZfc0",
+            "X-Parse-REST-API-Key":"5DLlGfP1j6RIrsmff7UFh8K8yOz6WM62g2lpIJei",
             "X-Parse-Session-Token":getSessionToken()
 
 
@@ -89,8 +89,8 @@ app.data=(function(){
             this._headers=cradentials.getHeaders();
         }
 
-        Songs.prototype.getAll=function(){
-            return this._ajaxRequester.get(this._serviceUrl,this._headers)
+        Songs.prototype.getAll=function(queryString){
+            return this._ajaxRequester.get(this._serviceUrl+queryString,this._headers)
         }
 
         Songs.prototype.getById=function(objectId){

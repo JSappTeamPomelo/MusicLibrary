@@ -17,6 +17,10 @@ var app=app||{};
             controller.loadLogin(selector)
         })
 
+        this.get('#/genre',function(){
+            controller.loadGenres(selector)
+        })
+
         this.get('#/register',function(){
             controller.loadRegister(selector)
         })

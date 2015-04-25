@@ -1,0 +1,24 @@
+<div id="genreSong">
+    <div id="genre-form">
+        <label for="genre-choose">Choose genre: </label>
+        <select id="genre-choose">
+            <option value="rock">Rock</option>
+            <option value="disco">Disco</option>
+            <option value="pop">Pop</option>
+            <option value="pop-folk">Pop-folk</option>
+        </select>
+        <button id="choose-genre">Submit</button>
+    </div>
+    <ul>
+        {{#results}}
+        <li data-id="{{objectId}}">
+            <div>Song: <a href="{{song.url}}">{{song.url}}</a></div>
+            <div>Title: {{title}}</div>
+            <div>Like: {{like}}</div>
+            <div>Genre: {{genre}}</div>
+            <!--<button class="like-songs-btn">Like</button>-->
+            <!--<button class="delete-songs-btn">X</button>-->
+        </li>
+        {{/results}}
+    </ul>
+</div>
