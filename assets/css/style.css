@@ -41,9 +41,9 @@ body {
 .page-head-line {
     font-weight: 900;
     padding-bottom: 20px;
-    border-bottom: 2px solid #9E9D86;
+    border-bottom: 2px solid #D5FC68;
     text-transform: uppercase;
-    color: #9E9D86;
+    color: #D5FC68;
     font-size: 20px;
     margin-bottom: 40px;
 }
@@ -70,7 +70,7 @@ margin-bottom: 20px;
 color: #fff;
 text-align: center;
 cursor:pointer;
-background-color:#9E9D86;
+background-color:#D5FC68;
 -webkit-border-radius:50%;
     -moz-border-radius:50%;
 }
@@ -78,7 +78,7 @@ background-color:#9E9D86;
    HEADER SECTION STYLES
  ============================================================ */
 header {
-    background-color: #9E9D86;
+    background-color: #D5FC68;
     color: #fff;
     padding: 10px;
     text-align: right;
@@ -109,7 +109,7 @@ header {
     -moz-border-radius: 50%;
     height: 60px;
     width: 60px;
-    background-color: #9E9D86;
+    background-color: #D5FC68;
     color: #fff;
 }
 
@@ -128,7 +128,7 @@ header {
 
     .user-settings-wrapper .nav > li > a:hover,.user-settings-wrapper .nav > li > a:focus {
         text-decoration: none;
-        background-color: #7A7964!important;
+        background-color: #B7E49D!important;
     }
 
     .user-settings-wrapper img {
@@ -157,7 +157,7 @@ header {
 /* MENU LINKS SECTION*/
 
 .menu-section {
-    background-color: #3D3D3D;
+    background-color: #D5FC68;
 }
 
 #menu-top a {
@@ -168,25 +168,22 @@ header {
     text-transform: uppercase;
 }
 
-.menu-top-active {
-    background-color: #9E9D86;
-}
 
 .menu-section .nav > li > a:hover,.menu-section .nav > li > a:focus {
-    background-color: #9E9D86!important;
+    background-color: #B7E49D!important;
 }
 
 .menu-section .dropdown-menu > li > a:hover,.menu-section .dropdown-menu > li > a:focus {
-    background-color: #9E9D86!important;
+    background-color: #D5FC68!important;
 }
 
 .navbar-inverse {
-    background-color: #9E9D86;
+    background-color: #B7E49D;
     border-color: transparent;
 }
 
 .navbar-toggle {
-    background-color: #9E9D86;
+    background-color: #B7E49D;
     border: 1px solid #fff;
 }
 
@@ -200,7 +197,7 @@ footer {
     padding: 10px;
     color: #fff;
     font-size: 12px;
-    background-color: #9E9D86;
+    background-color: #B7E49D;
 }
 
     footer a, footer a:hover {
@@ -270,30 +267,28 @@ footer {
         color: #000;
     }
 
-/* SOCIAL BUTTONS */
-.btn-social {
-    color: white;
-    opacity: 0.8;
-}
-
-    .btn-social:hover {
-        color: white;
-        opacity: 1;
-        text-decoration: none;
+    #wrapper{
+        padding-left: 130px;
     }
 
-.btn-facebook {
-    background-color: #3b5998;
+#login{
+    padding-right: 20px;
+}
+#logout{
+    padding-left: 20px;
 }
 
-.btn-twitter {
-    background-color: #00aced;
+.nav.ul{
+    padding-left: 20px;
 }
 
-.btn-linkedin {
-    background-color: #0e76a8;
+img{
+    padding-left: 60px;
 }
 
-.btn-google {
-    background-color: #c32f10;
+#userWrapper{
+    padding-top: 20px;
+    padding-bottom: 0;
+    margin-top: 0;
+    margin-bottom: 15px;
 }

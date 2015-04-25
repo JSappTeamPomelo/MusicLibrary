@@ -2,8 +2,8 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/MusicLibrary.iml" filepath="$PROJECT_DIR$/.idea/MusicLibrary.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/zontal-admin.iml" filepath="$PROJECT_DIR$/.idea/zontal-admin.iml" />
     </modules>
   </component>
 </project>
-
