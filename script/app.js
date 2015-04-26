@@ -5,7 +5,9 @@ var app=app||{};
     var ajaxRequest=app.ajaxRequester.get();
     var data=app.data.get(baseUrl,ajaxRequest);
     var controller=app.controller.get(data);
-    controller.attachEventHandlers();
+    var eventController = app.eventController.get(data);
+    eventController.attachEventHandlers();
+
     app.router=Sammy(function(){
         var selector='#wrapper';
 
