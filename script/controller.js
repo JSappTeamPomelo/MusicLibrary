@@ -17,7 +17,7 @@ app.controller=(function(){
                 .then(function(data){
                     console.log(data.results['0'].objectId)
                     var secondQueryString='?where={"$relatedTo":{"object":{"__type":"Pointer","className":"PlayList","objectId":"' + data.results['0'].objectId + '"},"key":"RelationSong"}}'
-                    _this._data.songs.getAll(secondQueryString)
+                    _this._data.songs.getAll(secondQueryString + '&include=genre')
                         .then(function(data){
                             $.get('./templates/playlist.html',function(template){
                                 var output=Mustache.render(template,data);
