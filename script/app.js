@@ -21,6 +21,10 @@ var app=app||{};
             controller.loadGenres(selector)
         })
 
+        this.get('#/playlist',function(){
+            controller.loadPlaylist(selector)
+        })
+
         this.get('#/register',function(){
             controller.loadRegister(selector)
         })

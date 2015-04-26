@@ -9,6 +9,33 @@ app.controller=(function(){
         $(selector).load('./templates/genre.html')
     }
 
+    BaseController.prototype.loadPlaylist=function(selector){
+        var _this=this;
+        if(sessionStorage['sessionToken']){
+            var secondString='?where={"name":"' + sessionStorage['currentUserId'] + '"}'
+            this._data.playList.getAllRelationSong(secondString)
+                .then(function(data){
+                    console.log(data.results['0'].objectId)
+                    var secondQueryString='?where={"$relatedTo":{"object":{"__type":"Pointer","className":"PlayList","objectId":"' + data.results['0'].objectId + '"},"key":"RelationSong"}}'
+                    _this._data.songs.getAll(secondQueryString)
+                        .then(function(data){
+                            $.get('./templates/playlist.html',function(template){
+                                var output=Mustache.render(template,data);
+                                $(selector).html(output);
+                            })
+                        })
+                })
+
+//            this._data.songs.getAllRelationSong(secondQueryString)
+//            $(selector).load('./templates/playlist.html')
+//            $('<div>').appendTo($('#play-list')).text("Hi "+sessionStorage['currentUser'])
+        }
+        else{
+            $(selector).load('./templates/plsLogin.html')
+        }
+
+    }
+
     BaseController.prototype.loadHome=function(selector){
         $(selector).load('./templates/home.html')
     }
@@ -21,12 +48,30 @@ app.controller=(function(){
         $(selector).load('./templates/register.html')
     }
     BaseController.prototype.loadSongs=function(selector){
-        this._data.songs.getAll(queryString)
+        var _this = this;
+
+        $.get('./templates/songs.html',function(template){
+            var output=Mustache.render(template);
+            $(selector).html(output);
+        });
+
+        this._data.songs.getAll('?include=genre')
             .then(function(data){
-                $.get('./templates/songs.html',function(template){
-                    var output=Mustache.render(template,data);
-                    $(selector).html(output);
-                })
+                var results = data.results;
+
+                results.forEach(function (song) {
+                    _this._data.comments.getCommentsBySong(song.objectId)
+                        .then(function (comments) {
+                            song['comments'] = comments.results;
+                            $.get('./templates/song.html',function(template){
+                                var output=Mustache.render(template,song);
+                                //$(selector).prepend(output);
+                                $(output).insertBefore($('#create-song-btn'));
+                            })
+                        }, function (error) {
+                            console.log(error.responseText);
+                        });
+                });
             })
     }
 
@@ -38,8 +83,10 @@ app.controller=(function(){
         attachCreateSongHandler.call(this,selector);
         attachDeleteSongHandler.call(this,selector);
         attachLikeSongHandler.call(this,selector);
-        attachLogoutHandler.call(this,otherSelector)
-        attachGetSongByGenre.call(this,selector)
+        attachLogoutHandler.call(this,otherSelector);
+        attachGetSongByGenre.call(this,selector);
+        attachAddCommentHandler.call(this, selector);
+        attachAddToPlayList.call(this,selector);
     }
 
 
@@ -89,6 +136,13 @@ app.controller=(function(){
             var password=$('#password').val();
             _this._data.users.register(username,password)
                 .then(function(data){
+                    var playList={
+                        "name":data.objectId
+                    }
+                    _this._data.playList.addToPlayList(playList)
+                        .then(function(data){
+                            alert('you have playlist')
+                        })
                     alert('You are registered successfully '+username+' Go to login page')
                     location.reload()
                 },function(erroe){
@@ -97,7 +151,35 @@ app.controller=(function(){
         })
     }
 
+    var attachAddToPlayList=function(selector){
+        var _this=this;
+        $(selector).on('click','.add-to-playlist',function(){
+            if(sessionStorage['sessionToken']){
+                var objectId=$(this).parent().data('id');
+                var song={"RelationSong": {
+                    "__op": "AddRelation",
+                    "objects": [{"__type": "Pointer",
+                        "className": "Song",
+                        "objectId": objectId}]
+                }}
+                var newString='?where={"name":"' + sessionStorage['currentUserId'] + '"}'
+                _this._data.playList.getAllRelationSong(newString)
+                    .then(function(data){
+                        console.log(data.results['0'].objectId);
+                        _this._data.playList.editRelation(song,data.results['0'].objectId)
+                            .then(function(data){
+                                alert('the song is add to playlist')
+                            },function(error){
+                                console.log('song can not be add to playlist')
+                            })
+                    })
 
+            }
+            else{
+                alert('Login pls')
+            }
+        })
+    }
 
     var attachCreateSongHandler=function(selector){
         var _this=this;
@@ -201,7 +283,55 @@ app.controller=(function(){
                     })
             }
         })
-    }
+    };
+
+    var attachAddCommentHandler = function(selector) {
+        var _this = this;
+        $(selector).on('click','.add-comment-btn', function(ev){
+            var textarea = $(this).prev(),
+                content=textarea.val(),
+                songDiv = $(this).parent().parent(),
+                songId = songDiv.attr('data-id'),
+                userId = sessionStorage['currentUserId'],
+                userName = sessionStorage['currentUser'],
+                comment = {
+                    content: content,
+                    toSong: {
+                        __type: "Pointer",
+                        className: "Song",
+                        objectId: songId
+                    },
+                    by: {
+                        __type: "Pointer",
+                        className: "_User",
+                        objectId: userId
+                    }
+                };
+
+            _this._data.comments.add(comment)
+                .then(function(data) {
+                    var newComment = {
+                        'objectId': data.objectId,
+                        'content': content,
+                        'by': {
+                            'objectId': userId,
+                            'username': userName
+                        },
+                        'createdAt': data.createdAt
+                    };
+
+                    $.get('./templates/addComment.html',function(template){
+                        var output = Mustache.render(template, newComment);
+                        $(output).insertBefore(textarea);
+                    });
+
+                    textarea.val('');
+
+                },function(error) {
+                    console.log(error);
+                });
+        })
+    };
 
 
     return{

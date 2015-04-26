@@ -3,13 +3,15 @@ var app=app||{};
 app.data=(function(){
     function Data(baseUrl,ajaxRequest){
         this.users=new Users(baseUrl,ajaxRequest);
-        this.songs=new Songs(baseUrl,ajaxRequest)
+        this.songs=new Songs(baseUrl,ajaxRequest);
+        this.comments = new Comment(baseUrl, ajaxRequest);
+        this.playList=new PlayList(baseUrl,ajaxRequest);
     }
 
     var cradentials=(function(){
         var headers={
-            "X-Parse-Application-Id":"kzEIfMrBQhYADbSmJqYiJg6XHjGotOHL2nhmZfc0",
-            "X-Parse-REST-API-Key":"5DLlGfP1j6RIrsmff7UFh8K8yOz6WM62g2lpIJei",
+            "X-Parse-Application-Id":"NInepsto7D88N6imyYYsnEbDjEJWcYsKj8WPtxCG",
+            "X-Parse-REST-API-Key":"d3WxJ6c68zuO0KvhcBlyX3LzltXWepViQB2o6hf4",
             "X-Parse-Session-Token":getSessionToken()
 
 
@@ -81,6 +83,30 @@ app.data=(function(){
         return Users;
     }())
 
+    var PlayList=(function(){
+        function PlayList(baseUrl,ajaxRequester){
+            this._serviceUrl=baseUrl+'classes/PlayList'
+            this._ajaxRequester=ajaxRequester;
+            this._headers=cradentials.getHeaders();
+        }
+
+        PlayList.prototype.getAllRelationSong=function(queryString){
+            return this._ajaxRequester.get(this._serviceUrl+queryString,this._headers)
+        }
+
+        PlayList.prototype.editRelation=function(song,objectId){
+            var url=this._serviceUrl+'/'+objectId;
+            return this._ajaxRequester.put(url,song,this._headers)
+        }
+
+        PlayList.prototype.addToPlayList=function(song){
+            return this._ajaxRequester.post(this._serviceUrl,song,this._headers)
+        }
+
+        return PlayList;
+
+    }())
+
 
     var Songs=(function(){
         function Songs(baseUrl,ajaxRequester){
@@ -110,16 +136,71 @@ app.data=(function(){
             var url=this._serviceUrl+'/'+objectId;
             return this._ajaxRequester.delete(url,this._headers)
         }
+
+        Songs.prototype.updateComments = function (objectId) {
+            Comment.getCommentsBySong(objectId)
+                .then(function (data) {
+                    var comments = {
+                        'comments': data.results
+                    };
+
+                    return this._ajaxRequester.put(url, comments, this._headers)
+                });
+        };
+
         return Songs;
 
-    }())
+    }());
 
-    return{
-        get:function(baseUrl,ajaxRequester){
-            return new Data(baseUrl,ajaxRequester)
+    var Comment = (function () {
+        function Comment(baseUrl,ajaxRequester){
+            this._serviceUrl=baseUrl+'classes/Comment';
+            this._ajaxRequester=ajaxRequester;
+            this._headers=cradentials.getHeaders();
+        }
+
+        Comment.prototype.add = function(comment) {
+            return this._ajaxRequester.post(this._serviceUrl, comment,this._headers)
+        };
+
+        Comment.prototype.getCommentsBySong = function (songId) {
+            var query = JSON.stringify({
+                toSong: {
+                    __type: 'Pointer',
+                    className: 'Song',
+                    objectId: songId
+                }
+            });
+
+            var url = this._serviceUrl + '?where=' + query + '&include=by';
+            return this._ajaxRequester.get(url, this._headers);
+        };
+
+        Comment.prototype.getCommentsByPlayList = function (playListId) {
+            var query = JSON.stringify({
+                toGenre: {
+                    __type: "Pointer",
+                    className: "Genre",
+                    objectId: playListId
+                }
+            });
+
+            var url = this._serviceUrl + '?where=' + query + '&include=by';
+            return this._ajaxRequester.get(url + query, this._headers);
+        };
+
+        Comment.prototype.delete=function(objectId){
+            var url = this._serviceUrl + '/' + objectId;
+            return this._ajaxRequester.delete(url, this._headers);
+        };
+
+        return Comment;
+    }());
+
+    return {
+        get: function (baseUrl, ajaxRequester) {
+            return new Data(baseUrl, ajaxRequester)
         }
     }
 
-
-
-}())
+}());
