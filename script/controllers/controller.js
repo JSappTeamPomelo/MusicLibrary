@@ -8,7 +8,7 @@ app.controller=(function(){
     var queryString='';
 
     BaseController.prototype.loadGenres=function(selector){
-        $(selector).load('./templates/genre.html')
+        app.genreView.render(selector);
     };
 
     BaseController.prototype.loadPlaylist=function(selector){
@@ -29,10 +29,7 @@ app.controller=(function(){
                                 comments: comments.results
                             };
 
-                            $.get('./templates/playlist.html',function(template){
-                                var output=Mustache.render(template, playList);
-                                $(selector).html(output);
-                            });
+                            app.playListView.render(selector, playList);
 
                             console.log(data.results['0'].objectId);
                             var secondQueryString='?where={"$relatedTo":{"object":{"__type":"Pointer","className":"PlayList","objectId":"'
@@ -40,7 +37,12 @@ app.controller=(function(){
                             _this._data.songs.getAll(secondQueryString + '&include=genre')
                                 .then(function(data){
                                     data.results.forEach(function(song) {
-                                        app.songView.render(_this, song, 'div.comments', './templates/songInPlayList.html');
+                                        _this._data.comments.getCommentsBySong(song.objectId)
+                                            .then(function(comments) {
+                                                app.songView.render(song, 'div.comments', './templates/songInPlayList.html', comments);
+                                            }, function(error) {
+                                                console.log(error);
+                                            });
                                     });
                                 });
                         }, function(error) {
@@ -55,31 +57,32 @@ app.controller=(function(){
     }
 
     BaseController.prototype.loadHome=function(selector){
-        $(selector).load('./templates/home.html')
+        app.loadHomeView.render(selector);
     };
 
     BaseController.prototype.loadLogin=function(selector){
-        $(selector).load('./templates/login.html')
+        app.loadLoginView.render(selector);
     };
 
     BaseController.prototype.loadRegister=function(selector){
-        $(selector).load('./templates/register.html')
+        app.registerView.render(selector);
     };
 
     BaseController.prototype.loadSongs=function(selector){
         var _this = this;
 
-        $.get('./templates/songs.html',function(template){
-            var output=Mustache.render(template);
-            $(selector).html(output);
-        });
+        app.songsView.render(selector);
 
         this._data.songs.getAll('?include=genre')
             .then(function(data){
                 var results = data.results;
-
-                results.forEach(function (song) {
-                    app.songView.render(_this, song, '#create-song-btn', './templates/song.html');
+                results.forEach(function(song) {
+                    _this._data.comments.getCommentsBySong(song.objectId)
+                        .then(function(comments) {
+                            app.songView.render(song, '#create-song-btn', './templates/song.html', comments);
+                        }, function(error) {
+                            console.log(error);
+                        });
                 });
             })
     };

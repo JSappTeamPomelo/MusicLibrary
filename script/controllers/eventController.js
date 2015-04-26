@@ -3,7 +3,7 @@ var app=app||{};
 app.eventController=(function(){
     function EventController(data){
         this._data=data;
-    };
+    }
 
     EventController.prototype.attachEventHandlers = function() {
         var selector='#wrapper';
@@ -133,7 +133,12 @@ app.eventController=(function(){
                 .then(function(data) {
                     _this._data.songs.getById(data.objectId)
                         .then(function(song){
-                            app.songView.render(_this, song, '#create-song-btn', './templates/song.html');
+                            _this._data.comments.getCommentsBySong(song.objectId)
+                                .then(function(comments) {
+                                    app.songView.render(song, '#create-song-btn', './templates/song.html', comments);
+                                }, function(error) {
+                                    console.log(error);
+                                });
                         },function(error) {
                             console.log(error);
                         });
