@@ -1,17 +1,13 @@
-<div id="play-list">
-    <ul>
-        {{#results}}
-        <li data-id="{{objectId}}">
-            <div>Song: <a href="{{song.url}}">{{song.url}}</a></div>
-            <div>Title: {{title}}</div>
-            <div>Like: {{like}}</div>
-            <div>Genre: {{genre.name}}</div>
-            <button class="like-songs-btn">Like</button>
-            <button class="delete-songs-btn">X</button>
-            <!--<button class="add-to-playlist">Add to playlist</button>-->
-            <!--{{#sessionStorage['sessionToken']}}-->
-            <!--{{/sessionStorage['sessionToken']}}-->
-        </li>
-        {{/results}}
-    </ul>
+<div class="play-list" data-id="{{objectId}}">
+    <div class="comments">Comments:
+        {{#comments}}
+        <div class="current-comment" data-id="{{objectId}}">
+            <span>Content: {{content}}</span><br/>
+            <span data-id="by.objectId">User: {{by.username}}</span>
+            <span>At: {{createdAt}}</span>
+        </div>
+        {{/comments}}
+        <textarea name="add-Comment" id="add-comment" cols="30" rows="3"></textarea>
+        <button class="add-comment-btn">Add Comment</button>
+    </div>
 </div>

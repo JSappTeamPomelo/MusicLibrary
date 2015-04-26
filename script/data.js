@@ -83,7 +83,7 @@ app.data=(function(){
 
     var PlayList=(function(){
         function PlayList(baseUrl,ajaxRequester){
-            this._serviceUrl=baseUrl+'classes/PlayList'
+            this._serviceUrl=baseUrl+'classes/PlayList';
             this._ajaxRequester=ajaxRequester;
             this._headers=cradentials.getHeaders();
         }
@@ -214,9 +214,9 @@ app.data=(function(){
 
         Comment.prototype.getCommentsByPlayList = function (playListId) {
             var query = JSON.stringify({
-                toGenre: {
-                    __type: "Pointer",
-                    className: "Genre",
+                toPlayList: {
+                    __type: 'Pointer',
+                    className: 'PlayList',
                     objectId: playListId
                 }
             });
