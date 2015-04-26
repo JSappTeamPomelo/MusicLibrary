@@ -5,6 +5,7 @@ app.ajaxRequester=(function(){
         this.get=makeGetRequest;
         this.post=makePostRequest;
         this.put=makePutRequest;
+        this.postFile = makePostFileRequest;
         this.delete=makeDeleteRequest;
     }
 
@@ -27,6 +28,26 @@ app.ajaxRequester=(function(){
         return defer.promise;
     }
 
+    function makeSpecialRequest(url,method,data,headers){
+        var defer= Q.defer();
+        $.ajax({
+            url:url,
+            method:method,
+            data: data,
+            processData: false,
+            contentType: data.type,
+            headers:headers,
+            success:function(data){
+                defer.resolve(data)
+            },
+            error:function(error){
+                defer.reject(error)
+            }
+        })
+
+        return defer.promise;
+    }
+
     function makeGetRequest(url,headers){
         return makeRequest(url,'GET',null,headers)
     }
@@ -37,6 +58,10 @@ app.ajaxRequester=(function(){
 
     function makePutRequest(url,data,headers){
         return makeRequest(url,'PUT',data,headers)
+    }
+
+    function makePostFileRequest(url,data,headers){
+        return makeSpecialRequest(url,'POST',data,headers)
     }
 
     function makeDeleteRequest(url,headers){

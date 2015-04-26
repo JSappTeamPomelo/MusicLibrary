@@ -178,19 +178,29 @@ app.controller=(function(){
     var attachCreateSongHandler=function(selector){
         var _this=this;
         $(selector).on('click','#create-song',function(ev){
-            var title=$('#title').val();
-            var songFile=$('#song').val();
-            var genre=$('#genre').val() //to do - change this to get the id of the genre
-            var song={
-                songFile:songFile,
-                title:title,
-                like:0,
-                genre: {
-                    "__type": "Pointer",
-                    "className": "Genre",
-                    "objectId": "XmUjevGoOT" //hardcode for testing until genre is ready
-                }
-            }
+            var title=$('#title').val(),
+                songFile=$('#song'),
+                fileUploadControl = $("#song")[0],
+                file = fileUploadControl.files[0],
+                genre=$('#genre').val(), //to do - change this to get the id of the genre
+                userId = sessionStorage['currentUserId'],
+                userName = sessionStorage['currentUser'],
+                song={
+                    file:file,
+                    title:title,
+                    like:0,
+                    genre: {
+                        "__type": "Pointer",
+                        "className": "Genre",
+                        "objectId": "XmUjevGoOT" //hardcode for testing until genre is ready
+                    },
+                    by: {
+                        "__type": "Pointer",
+                        "className": "_User",
+                        "objectId": userId
+                    }
+                };
+
             _this._data.songs.add(song)
                 .then(function(data){
                     console.log('add success')

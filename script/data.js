@@ -13,8 +13,6 @@ app.data=(function(){
             "X-Parse-Application-Id":"NInepsto7D88N6imyYYsnEbDjEJWcYsKj8WPtxCG",
             "X-Parse-REST-API-Key":"d3WxJ6c68zuO0KvhcBlyX3LzltXWepViQB2o6hf4",
             "X-Parse-Session-Token":getSessionToken()
-
-
         }
 
         function getSessionToken(){
@@ -127,7 +125,52 @@ app.data=(function(){
         }
 
         Songs.prototype.add=function(song){
-            return this._ajaxRequester.post(this._serviceUrl,song,this._headers)
+            var _this = this,
+                file = song.file,
+                url = 'https://api.parse.com/1/files/'+ song.title + '.' + file.name.substr(file.name.lastIndexOf('.')+1);
+
+            _this._ajaxRequester.postFile(url, file, _this._headers)
+                .then(function(data) {
+                    alert("File with name: " + file.name + " was successfully uploaded");
+                    console.log(data);
+                    song.file = {
+                        __type: "File",
+                        name: data.name,
+                        url: data.url
+                    };
+
+                    console.log(song);
+                    return _this._ajaxRequester.post(_this._serviceUrl, song, _this._headers);
+                },
+                function(data) {
+                    var obj = jQuery.parseJSON(data);
+                    alert(obj.error);
+                }
+            );
+
+            //$.ajax({
+            //    type: "POST",
+            //    headers: this._headers,
+            //    url: 'https://api.parse.com/1/files/'+ song.title + '.' + file.name.substr(file.name.lastIndexOf('.')+1),
+            //    data: file,
+            //    processData: false,
+            //    contentType: file.type,
+            //    success: function(data) {
+            //        alert("File with name: " + file.name + " was successfully uploaded");
+            //        song.file = {
+            //            __type: "File",
+            //            name: data.name,
+            //            url: data.url
+            //        };
+            //
+            //        console.log(song);
+            //        return _this._ajaxRequester.post(_this._serviceUrl, song, _this._headers);
+            //    },
+            //    error:                function(data) {
+            //        var obj = jQuery.parseJSON(data);
+            //        alert(obj.error);
+            //    }
+            //});
         }
 
 
