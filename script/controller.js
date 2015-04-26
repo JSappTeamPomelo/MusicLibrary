@@ -89,9 +89,6 @@ app.controller=(function(){
         attachAddToPlayList.call(this,selector);
     }
 
-
-
-
     var attachLogoutHandler=function(selector){
         $(selector).on('click','#logout',function(){
             sessionStorage['currentUser']='';
@@ -101,9 +98,6 @@ app.controller=(function(){
         })
     }
 
-
-
-    
     var attachLoginHandler=function(selector){
         var _this=this;
         $(selector).on('click','#login',function(){
@@ -161,7 +155,7 @@ app.controller=(function(){
                     "objects": [{"__type": "Pointer",
                         "className": "Song",
                         "objectId": objectId}]
-                }}
+                }};
                 var newString='?where={"name":"' + sessionStorage['currentUserId'] + '"}'
                 _this._data.playList.getAllRelationSong(newString)
                     .then(function(data){
