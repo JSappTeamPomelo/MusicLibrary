@@ -180,13 +180,16 @@ app.controller=(function(){
         $(selector).on('click','#create-song',function(ev){
             var title=$('#title').val();
             var songFile=$('#song').val();
-            var genre=$('#genre').val()
+            var genre=$('#genre').val() //to do - change this to get the id of the genre
             var song={
                 songFile:songFile,
                 title:title,
                 like:0,
-                genre:genre
-
+                genre: {
+                    "__type": "Pointer",
+                    "className": "Genre",
+                    "objectId": "XmUjevGoOT" //hardcode for testing until genre is ready
+                }
             }
             _this._data.songs.add(song)
                 .then(function(data){
