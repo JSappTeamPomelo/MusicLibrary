@@ -4,6 +4,7 @@ app.data=(function(){
     function Data(baseUrl,ajaxRequest){
         this.users=new Users(baseUrl,ajaxRequest);
         this.songs=new Songs(baseUrl,ajaxRequest)
+        this.playList=new PlayList(baseUrl,ajaxRequest)
     }
 
     var cradentials=(function(){
@@ -81,10 +82,35 @@ app.data=(function(){
         return Users;
     }())
 
+    var PlayList=(function(){
+        function PlayList(baseUrl,ajaxRequester){
+            this._serviceUrl=baseUrl+'classes/PlayList'
+            this._ajaxRequester=ajaxRequester;
+            this._headers=cradentials.getHeaders();
+        }
+
+        PlayList.prototype.getAllRelationSong=function(queryString){
+            return this._ajaxRequester.get(this._serviceUrl+queryString,this._headers)
+        }
+
+        PlayList.prototype.editRelation=function(song,objectId){
+            var url=this._serviceUrl+'/'+objectId;
+            return this._ajaxRequester.put(url,song,this._headers)
+        }
+
+        PlayList.prototype.addToPlayList=function(song){
+            return this._ajaxRequester.post(this._serviceUrl,song,this._headers)
+        }
+
+        return PlayList;
+
+    }())
 
     var Songs=(function(){
         function Songs(baseUrl,ajaxRequester){
             this._serviceUrl=baseUrl+'classes/Song';
+//            this._playListUrl=baseUrl+'classes/PlayList'
+//            this._editUrl=baseUrl+'classes/_User'
             this._ajaxRequester=ajaxRequester;
             this._headers=cradentials.getHeaders();
         }
@@ -92,6 +118,8 @@ app.data=(function(){
         Songs.prototype.getAll=function(queryString){
             return this._ajaxRequester.get(this._serviceUrl+queryString,this._headers)
         }
+
+
 
         Songs.prototype.getById=function(objectId){
             return this._ajaxRequester.get(this._serviceUrl+'/'+objectId,this._headers)
@@ -101,10 +129,14 @@ app.data=(function(){
             return this._ajaxRequester.post(this._serviceUrl,song,this._headers)
         }
 
+
+
         Songs.prototype.edit=function(song,objectId){
             var url=this._serviceUrl+'/'+objectId;
             return this._ajaxRequester.put(url,song,this._headers)
         }
+
+
 
         Songs.prototype.delete=function(objectId){
             var url=this._serviceUrl+'/'+objectId;

@@ -9,6 +9,33 @@ app.controller=(function(){
         $(selector).load('./templates/genre.html')
     }
 
+    BaseController.prototype.loadPlaylist=function(selector){
+        var _this=this;
+        if(sessionStorage['sessionToken']){
+            var secondString='?where={"name":"' + sessionStorage['currentUserId'] + '"}'
+            this._data.playList.getAllRelationSong(secondString)
+                .then(function(data){
+                    console.log(data.results['0'].objectId)
+                    var secondQueryString='?where={"$relatedTo":{"object":{"__type":"Pointer","className":"PlayList","objectId":"' + data.results['0'].objectId + '"},"key":"RelationSong"}}'
+                    _this._data.songs.getAll(secondQueryString)
+                        .then(function(data){
+                            $.get('./templates/playlist.html',function(template){
+                                var output=Mustache.render(template,data);
+                                $(selector).html(output);
+                            })
+                        })
+                })
+
+//            this._data.songs.getAllRelationSong(secondQueryString)
+//            $(selector).load('./templates/playlist.html')
+//            $('<div>').appendTo($('#play-list')).text("Hi "+sessionStorage['currentUser'])
+        }
+        else{
+            $(selector).load('./templates/plsLogin.html')
+        }
+
+    }
+
     BaseController.prototype.loadHome=function(selector){
         $(selector).load('./templates/home.html')
     }
@@ -38,8 +65,9 @@ app.controller=(function(){
         attachCreateSongHandler.call(this,selector);
         attachDeleteSongHandler.call(this,selector);
         attachLikeSongHandler.call(this,selector);
-        attachLogoutHandler.call(this,otherSelector)
-        attachGetSongByGenre.call(this,selector)
+        attachLogoutHandler.call(this,otherSelector);
+        attachGetSongByGenre.call(this,selector);
+        attachAddToPlayList.call(this,selector);
     }
 
 
@@ -89,6 +117,13 @@ app.controller=(function(){
             var password=$('#password').val();
             _this._data.users.register(username,password)
                 .then(function(data){
+                    var playList={
+                        "name":data.objectId
+                    }
+                    _this._data.playList.addToPlayList(playList)
+                        .then(function(data){
+                            alert('you have playlist')
+                        })
                     alert('You are registered successfully '+username+' Go to login page')
                     location.reload()
                 },function(erroe){
@@ -97,7 +132,35 @@ app.controller=(function(){
         })
     }
 
+    var attachAddToPlayList=function(selector){
+        var _this=this;
+        $(selector).on('click','.add-to-playlist',function(){
+            if(sessionStorage['sessionToken']){
+                var objectId=$(this).parent().data('id');
+                var song={"RelationSong": {
+                    "__op": "AddRelation",
+                    "objects": [{"__type": "Pointer",
+                    "className": "Song",
+                    "objectId": objectId}]
+                }}
+                var newString='?where={"name":"' + sessionStorage['currentUserId'] + '"}'
+                _this._data.playList.getAllRelationSong(newString)
+                    .then(function(data){
+                        console.log(data.results['0'].objectId);
+                        _this._data.playList.editRelation(song,data.results['0'].objectId)
+                            .then(function(data){
+                                alert('the song is add to playlist')
+                            },function(error){
+                                console.log('song can not be add to playlist')
+                            })
+                    })
 
+            }
+            else{
+                alert('Login pls')
+            }
+        })
+    }
 
     var attachCreateSongHandler=function(selector){
         var _this=this;
