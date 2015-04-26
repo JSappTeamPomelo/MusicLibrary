@@ -65,9 +65,8 @@ app.controller=(function(){
                             song['comments'] = comments.results;
                             $.get('./templates/song.html',function(template){
                                 var output=Mustache.render(template,song);
-                                //$(selector).prepend(output);
                                 $(output).insertBefore($('#create-song-btn'));
-                            })
+                            });
                         }, function (error) {
                             console.log(error.responseText);
                         });
@@ -203,15 +202,20 @@ app.controller=(function(){
 
             _this._data.songs.add(song)
                 .then(function(data){
-                    console.log('add success')
                     _this._data.songs.getById(data.objectId)
                         .then(function(song){
-                            location.reload()
-                            //var li=$('<li>').append('Song: '+song.songFile);
-                            //li=$('<li>').append('Song: '+song.title)
-                            //$('#songs ul').append(li);
-                            //$('#song').val('');
-                            //$('#title').val('');
+                            _this._data.comments.getCommentsBySong(song.objectId)
+                                .then(function (comments) {
+                                    song['comments'] = comments.results;
+                                    $.get('./templates/song.html',function(template){
+                                        var output=Mustache.render(template,song);
+                                        $(output).insertBefore($('#create-song-btn'));
+                                    });
+                                    $('#song').val('');
+                                    $('#title').val('');
+                                }, function (error) {
+                                    console.log(error.responseText);
+                                });
                         },function(error){
                             console.log(error)
                         })

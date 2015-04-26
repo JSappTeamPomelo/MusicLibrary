@@ -121,13 +121,16 @@ app.data=(function(){
 
 
         Songs.prototype.getById=function(objectId){
-            return this._ajaxRequester.get(this._serviceUrl+'/'+objectId,this._headers)
+            return this._ajaxRequester.get(this._serviceUrl+'/'+objectId + '?include=genre',this._headers)
         }
 
         Songs.prototype.add=function(song){
             var _this = this,
                 file = song.file,
-                url = 'https://api.parse.com/1/files/'+ song.title + '.' + file.name.substr(file.name.lastIndexOf('.')+1);
+                url = 'https://api.parse.com/1/files/'+ song.title + '.' + file.name.substr(file.name.lastIndexOf('.')+1),
+                result = {};
+
+            var defer= Q.defer();
 
             _this._ajaxRequester.postFile(url, file, _this._headers)
                 .then(function(data) {
@@ -140,7 +143,12 @@ app.data=(function(){
                     };
 
                     console.log(song);
-                    return _this._ajaxRequester.post(_this._serviceUrl, song, _this._headers);
+                    _this._ajaxRequester.post(_this._serviceUrl, song, _this._headers)
+                        .then(function(data) {
+                            defer.resolve(data);
+                        }, function(error) {
+                            defer.reject(error);
+                        });
                 },
                 function(data) {
                     var obj = jQuery.parseJSON(data);
@@ -148,29 +156,7 @@ app.data=(function(){
                 }
             );
 
-            //$.ajax({
-            //    type: "POST",
-            //    headers: this._headers,
-            //    url: 'https://api.parse.com/1/files/'+ song.title + '.' + file.name.substr(file.name.lastIndexOf('.')+1),
-            //    data: file,
-            //    processData: false,
-            //    contentType: file.type,
-            //    success: function(data) {
-            //        alert("File with name: " + file.name + " was successfully uploaded");
-            //        song.file = {
-            //            __type: "File",
-            //            name: data.name,
-            //            url: data.url
-            //        };
-            //
-            //        console.log(song);
-            //        return _this._ajaxRequester.post(_this._serviceUrl, song, _this._headers);
-            //    },
-            //    error:                function(data) {
-            //        var obj = jQuery.parseJSON(data);
-            //        alert(obj.error);
-            //    }
-            //});
+            return defer.promise;;
         }
 
 
