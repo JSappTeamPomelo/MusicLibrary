@@ -1,13 +1,16 @@
 var app = app || {};
 
 app.genreView = (function() {
-    function render(selector) {
-        $(selector).load('./templates/genre.html')
+    function render(selector, data) {
+        $.get('./templates/genre.html',function(template){
+            var output = Mustache.render(template, data);
+            $(selector).html(output);
+        });
     }
 
     return {
-        render: function (selector) {
-            render(selector);
+        render: function (selector, data) {
+            render(selector, data);
         }
     };
 }());

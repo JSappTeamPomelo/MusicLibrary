@@ -163,16 +163,29 @@ app.eventController=(function(){
     var attachGetSongByGenre = function(selector) {
         var _this = this;
         $(selector).on('click', '#choose-genre', function() {
-            var genre=$('#genre-choose').val();
-//            var stringGenre=""+genre;
-            var queryString='?where={"genre":"' + genre + '"}';
-            _this._data.songs.getAll(queryString)
+            $('div.songs').html('<span id="endOfSongs"></span>');
+            var genreId=$('#genre-choose option:selected').attr('id'),
+                genre = JSON.stringify({
+                    genre: {
+                        __type: "Pointer",
+                        className: "Genre",
+                        objectId: genreId
+                    }
+                });
+
+            var queryString='?where=' + genre;
+            _this._data.songs.getAll('?include=genre')
                 .then(function(data) {
-                    $.get('./templates/genreSong.html',function(template){
-                        var output = Mustache.render(template,data);
-                        $(selector).html(output);
-                    })
-                },function(error){
+                    console.log(data.results);
+                    data.results.forEach(function(song) {
+                        _this._data.comments.getCommentsBySong(song.objectId)
+                            .then(function(comments) {
+                                app.songView.render(song, '#endOfSongs', './templates/song.html', comments);
+                            }, function(error) {
+                                console.log(error);
+                            });
+                    });
+                },function(error) {
                     console.log(error);
                 })
         })

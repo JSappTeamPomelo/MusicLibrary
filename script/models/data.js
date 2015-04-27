@@ -6,6 +6,7 @@ app.data=(function(){
         this.songs = app.songModel.load(baseUrl,ajaxRequest);
         this.comments = app.commentModel.load(baseUrl, ajaxRequest);
         this.playList = app.playListModel.load(baseUrl,ajaxRequest);
+        this.genre = app.genreModel.load(baseUrl,ajaxRequest);
     }
 
     return {

@@ -1,12 +1,14 @@
 <div id="genre-form">
     <label for="genre-choose">Choose genre: </label>
     <select id="genre-choose">
-        <option value="rock">Rock</option>
-        <option value="disco">Disco</option>
-        <option value="pop">Pop</option>
-        <option value="pop-folk">Pop-folk</option>
+        {{#results}}
+        <option id="{{objectId}}" value="{{name}}">{{name}}</option>
+        {{/results}}
     </select>
     <button id="choose-genre">Submit</button>
+    <div class="songs">
+        <span id="endOfSongs"></span>
+    </div>
 </div>
 
 

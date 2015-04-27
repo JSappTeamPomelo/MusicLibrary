@@ -8,7 +8,15 @@ app.controller=(function(){
     var queryString='';
 
     BaseController.prototype.loadGenres=function(selector){
-        app.genreView.render(selector);
+        var _this = this;
+
+        this._data.genre.getAllGenres('')
+            .then(function(data) {
+                console.log(data);
+                app.genreView.render(selector, data);
+            }, function(error) {
+                console.log(error);
+            })
     };
 
     BaseController.prototype.loadPlaylist=function(selector){
