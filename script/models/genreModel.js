@@ -11,7 +11,7 @@ app.genreModel = (function () {
         return this._ajaxRequester.get(this._serviceUrl + queryString, this._headers);
     };
 
-    Genre.prototype.addGenre = function(genre) {
+    Genre.prototype.add = function(genre) {
         return this._ajaxRequester.post(this._serviceUrl, genre, this._headers);
     };
 

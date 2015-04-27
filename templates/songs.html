@@ -2,11 +2,10 @@
     <div id="create-song-btn">
         <input type="file" id="song"/>
         <input type="text" id="title" placeholder="Enter title"/>
-        <select id="genre">
-            <option value="rock">Rock</option>
-            <option value="disco">Disco</option>
-            <option value="pop">Pop</option>
-            <option value="pop-folk">Pop-folk</option>
+        <select id="genre-choose">
+            {{#results}}
+            <option id="{{objectId}}" value="{{name}}">{{name}}</option>
+            {{/results}}
         </select>
         <!--<input type="text" id="genre" placeholder="Enter genre"/>-->
         <button id="create-song">Add Song</button>

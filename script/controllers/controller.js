@@ -79,7 +79,12 @@ app.controller=(function(){
     BaseController.prototype.loadSongs=function(selector){
         var _this = this;
 
-        app.songsView.render(selector);
+        this._data.genre.getAllGenres('')
+            .then(function(data) {
+                app.songsView.render(selector, data);
+            }, function(error) {
+                console.log(error);
+            });
 
         this._data.songs.getAll('?include=genre')
             .then(function(data){

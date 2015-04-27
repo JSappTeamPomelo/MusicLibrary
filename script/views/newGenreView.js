@@ -1,10 +1,10 @@
 var app = app || {};
 
-app.songsView = (function() {
+app.newGenreView = (function() {
     function render(selector, data) {
-        $.get('./templates/songs.html',function(template) {
+        $.get('./templates/newGenre.html',function(template){
             var output = Mustache.render(template, data);
-            $(selector).html(output);
+            $(selector).append(output);
         });
     }
 

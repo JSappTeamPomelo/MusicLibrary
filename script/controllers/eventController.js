@@ -17,6 +17,7 @@ app.eventController=(function(){
         attachGetSongByGenre.call(this,selector);
         attachAddCommentHandler.call(this, selector);
         attachAddToPlayList.call(this,selector);
+        attachAddGenre.call(this,selector);
     };
 
     var attachLogoutHandler = function(selector) {
@@ -106,47 +107,52 @@ app.eventController=(function(){
     var attachCreateSongHandler = function(selector) {
         var _this=this;
         $(selector).on('click', '#create-song', function(ev) {
-            var title=$('#title').val(),
-                songFile=$('#song'),
-                fileUploadControl = $("#song")[0],
-                file = fileUploadControl.files[0],
-                genre=$('#genre').val(), //to do - change this to get the id of the genre
-                userId = sessionStorage['currentUserId'],
-                userName = sessionStorage['currentUser'],
-                song = {
-                    file: file,
-                    title: title,
-                    like: 0,
-                    genre: {
-                        "__type": "Pointer",
-                        "className": "Genre",
-                        "objectId": "XmUjevGoOT" //hardcode for testing until genre is ready
-                    },
-                    by: {
-                        "__type": "Pointer",
-                        "className": "_User",
-                        "objectId": userId
-                    }
-                };
+            if (sessionStorage['sessionToken']) {
+                var title=$('#title').val(),
+                    songFile=$('#song'),
+                    fileUploadControl = $("#song")[0],
+                    file = fileUploadControl.files[0],
+                    genreId=$('#genre-choose option:selected').attr('id'),
+                    userId = sessionStorage['currentUserId'],
+                    userName = sessionStorage['currentUser'],
+                    song = {
+                        file: file,
+                        title: title,
+                        like: 0,
+                        genre: {
+                            "__type": "Pointer",
+                            "className": "Genre",
+                            "objectId": genreId
+                        },
+                        by: {
+                            "__type": "Pointer",
+                            "className": "_User",
+                            "objectId": userId
+                        }
+                    };
 
-            _this._data.songs.add(song)
-                .then(function(data) {
-                    _this._data.songs.getById(data.objectId)
-                        .then(function(song){
-                            _this._data.comments.getCommentsBySong(song.objectId)
-                                .then(function(comments) {
-                                    app.songView.render(song, '#create-song-btn', './templates/song.html', comments);
-                                }, function(error) {
-                                    console.log(error);
-                                });
-                        },function(error) {
-                            console.log(error);
-                        });
-                    $('#song').val('');
-                    $('#title').val('');
-                }, function(error) {
-                    console.log(error)
-                })
+                _this._data.songs.add(song)
+                    .then(function(data) {
+                        _this._data.songs.getById(data.objectId)
+                            .then(function(song){
+                                _this._data.comments.getCommentsBySong(song.objectId)
+                                    .then(function(comments) {
+                                        app.songView.render(song, '#create-song-btn', './templates/song.html', comments);
+                                    }, function(error) {
+                                        console.log(error);
+                                    });
+                            },function(error) {
+                                console.log(error);
+                            });
+                        $('#song').val('');
+                        $('#title').val('');
+                    }, function(error) {
+                        console.log(error)
+                    })
+            }
+            else {
+                $(selector).load('./templates/plsLogin.html')
+            }
         });
 
         function getSongs(objectId) {
@@ -231,67 +237,94 @@ app.eventController=(function(){
 
     var attachAddCommentHandler = function(selector) {
         var _this = this;
-        $(selector).on('click','.add-comment-btn', function(ev){
-            var textarea = $(this).prev(),
-                content=textarea.val(),
-                songDiv = $(this).parent().parent(),
-                songId = songDiv.attr('data-id'),
-                userId = sessionStorage['currentUserId'],
-                userName = sessionStorage['currentUser'],
-                comment = {};
+        $(selector).on('click','.add-comment-btn', function(ev) {
+            if (sessionStorage['sessionToken']) {
+                var textarea = $(this).prev(),
+                    content = textarea.val(),
+                    songDiv = $(this).parent().parent(),
+                    songId = songDiv.attr('data-id'),
+                    userId = sessionStorage['currentUserId'],
+                    userName = sessionStorage['currentUser'],
+                    comment = {};
 
-            if (songDiv.attr('class') == 'play-list') {
-                comment = {
-                    content: content,
-                    toPlayList: {
-                        __type: "Pointer",
-                        className: "PlayList",
-                        objectId: songId
-                    },
-                    by: {
-                        __type: "Pointer",
-                        className: "_User",
-                        objectId: userId
-                    }
-                };
-            } else {
-                comment = {
-                    content: content,
-                    toSong: {
-                        __type: "Pointer",
-                        className: "Song",
-                        objectId: songId
-                    },
-                    by: {
-                        __type: "Pointer",
-                        className: "_User",
-                        objectId: userId
-                    }
-                };
-            }
-
-            _this._data.comments.add(comment)
-                .then(function(data) {
-                    var newComment = {
-                        'objectId': data.objectId,
-                        'content': content,
-                        'by': {
-                            'objectId': userId,
-                            'username': userName
+                if (songDiv.attr('class') == 'play-list') {
+                    comment = {
+                        content: content,
+                        toPlayList: {
+                            __type: "Pointer",
+                            className: "PlayList",
+                            objectId: songId
                         },
-                        'createdAt': data.createdAt
+                        by: {
+                            __type: "Pointer",
+                            className: "_User",
+                            objectId: userId
+                        }
+                    };
+                } else {
+                    comment = {
+                        content: content,
+                        toSong: {
+                            __type: "Pointer",
+                            className: "Song",
+                            objectId: songId
+                        },
+                        by: {
+                            __type: "Pointer",
+                            className: "_User",
+                            objectId: userId
+                        }
+                    };
+                }
+
+                _this._data.comments.add(comment)
+                    .then(function (data) {
+                        var newComment = {
+                            'objectId': data.objectId,
+                            'content': content,
+                            'by': {
+                                'objectId': userId,
+                                'username': userName
+                            },
+                            'createdAt': data.createdAt
+                        };
+
+                        $.get('./templates/addComment.html', function (template) {
+                            var output = Mustache.render(template, newComment);
+                            $(output).insertBefore(textarea);
+                        });
+
+                        textarea.val('');
+
+                    }, function (error) {
+                        console.log(error);
+                    });
+            }
+            else {
+                $(selector).load('./templates/plsLogin.html')
+            }
+        })
+    };
+
+    var attachAddGenre = function(selector) {
+        var _this=this;
+        $(selector).on('click', '#create-genre', function(ev) {
+            var genreName = $('#genreName').val(),
+                newGenre = {
+                  name: genreName
+                };
+
+            _this._data.genre.add(newGenre)
+                .then(function(data) {
+                    var newGenre = {
+                        name: genreName,
+                        objectId: data.objectId
                     };
 
-                    $.get('./templates/addComment.html',function(template){
-                        var output = Mustache.render(template, newComment);
-                        $(output).insertBefore(textarea);
-                    });
-
-                    textarea.val('');
-
-                },function(error) {
+                    app.newGenreView.render('#genre-choose', newGenre);
+                }, function(error) {
                     console.log(error);
-                });
+                })
         })
     };
 
