@@ -204,23 +204,36 @@ app.eventController=(function(){
     };
 
     var attachLikeSongHandler=function(selector){
+
         var _this=this;
         $(selector).on('click','.like-songs-btn',function(ev) {
-            var likeConfirmed = confirm('Do you Like?');
-            if (likeConfirmed) {
-                var objectId = $(this).parent().data('id');
-                var obj;
-                _this._data.songs.getById(objectId)
-                    .then(function(data){
-                        var like = data.like+1;
-                        var song = {
-                            like:like
-                        };
-                        _this._data.songs.edit(song,objectId)
-                            .then(function(data) {
-                                location.reload();
-                            })
-                    })
+            if(sessionStorage['currentUserId']) {
+                var likeConfirmed = confirm('Do you Like?');
+                if (likeConfirmed) {
+                    var objectId = $(this).parent().data('id');
+                    var obj;
+                    _this._data.songs.getById(objectId)
+                        .then(function (data) {
+                            var like = data.like + 1;
+                            var song = {
+                                like: like
+                            };
+                            if(localStorage[objectId]!=sessionStorage['currentUserId']+objectId){
+                                _this._data.songs.edit(song, objectId)
+                                    .then(function (data) {
+                                        localStorage.setItem(objectId,sessionStorage['currentUserId']+objectId);
+                                        location.reload();
+                                    })
+                            }
+                            else{
+                                alert('‎you already like this song')
+                            }
+
+                        })
+                }
+            }
+            else{
+                alert('Please login, to like this song')
             }
         })
     };
