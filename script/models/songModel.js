@@ -26,14 +26,12 @@ app.songModel = (function () {
         _this._ajaxRequester.postFile(url, file, _this._headers)
             .then(function(data) {
                 alert("File with name: " + file.name + " was successfully uploaded");
-                console.log(data);
                 song.file = {
                     __type: "File",
                     name: data.name,
                     url: data.url
                 };
 
-                console.log(song);
                 _this._ajaxRequester.post(_this._serviceUrl, song, _this._headers)
                     .then(function(data) {
                         defer.resolve(data);
