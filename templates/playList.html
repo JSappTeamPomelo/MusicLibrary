@@ -1,13 +1,13 @@
 <h2>Current Playlist</h2>
-<div id="likePlayList">Like: {{like}}</div>
+<div id="likePlayList">{{like}} people like this</div>
 <button class="like-playlists-btn">Like</button>
 <div class="play-list" data-id="{{objectId}}">
-    <div class="comments">Comments:
+    <div class="comments">
         {{#comments}}
         <div class="current-comment" data-id="{{objectId}}">
-            <span>Content: {{content}}</span><br/>
-            <span data-id="by.objectId">User: {{by.username}}</span>
-            <span>At: {{createdAt}}</span>
+            <span>{{content}}</span><br/>
+            <span data-id="by.objectId"> by {{by.username}}</span>
+            <span>on {{createdAt}}</span>
         </div>
         {{/comments}}
         <textarea name="add-Comment" id="add-comment" cols="30" rows="3"></textarea>

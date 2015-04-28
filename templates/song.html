@@ -1,24 +1,26 @@
 <div class="song" data-id="{{objectId}}">
-    <div>Song: <a href="{{file.url}}" download="{{title}}">Download</a></div>
-    <div>Title: {{title}}</div>
-    <div>Like: {{like}}</div>
-    <div>Genre: {{genre.name}}</div>
-    <audio controls>
-        <source src="{{file.url}}" type="audio/mpeg">
-    </audio>
-    <div class="comments">Comments:
+    <h3>{{title}}</h3>
+    <div class="comments">
         {{#comments}}
         <div class="current-comment" data-id="{{objectId}}">
-            <span>Content: {{content}}</span><br/>
-            <span data-id="by.objectId">User: {{by.username}}</span>
-            <span>At: {{createdAt}}</span>
+            <span> {{content}}</span><br/>
+            <span data-id="by.objectId">by {{by.username}}</span>
+            <span>on {{createdAt}}</span>
         </div>
         {{/comments}}
         <textarea name="add-Comment" id="add-comment" cols="30" rows="3"></textarea>
         <button class="add-comment-btn">Add Comment</button>
     </div>
+    <div class="left-div">
+    <audio controls>
+        <source src="{{file.url}}" type="audio/mpeg">
+    </audio>
+    <div><a href="{{file.url}}" download="{{title}}">Download</a></div>
+    <div>Genre: {{genre.name}}</div>
+    <div>{{like}} people like this</div>
+    </div>
     <button class="like-songs-btn">Like</button>
-    <button class="delete-songs-btn">X</button>
+    <button class="delete-songs-btn">Delete</button>
     <select class="playlist-choose">
         {{#playlists}}
         <option id="{{objectId}}" value="{{name}}">{{name}}</option>

@@ -1,11 +1,15 @@
 <div class="play-list" data-id="{{objectId}}">
+    <input type="text" id="newPlayListName" placeholder="Enter new play list name"/>
+    <button id="create-playList">Add PlayList</button>
     <h2>Play Lists</h2>
     <ul>
         {{#results}}
         <li id="{{objectId}}" class="playlist-item">{{name}}</li>
         {{/results}}
     </ul>
-    <input type="text" id="newPlayListName" placeholder="Enter new play list name"/>
-    <button id="create-playList">Add PlayList</button>
-    <div id="currentPlayList"></div>
+    <div id="currentPlayList">
+        <div class="songs">
+            <span id="playlistSongs"></span>
+        </div>
+    </div>
 </div>

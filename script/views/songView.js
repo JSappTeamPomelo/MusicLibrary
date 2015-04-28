@@ -6,7 +6,7 @@ app.songView = (function() {
         song['playlists'] = playLists.results;
         $.get(template, function (template) {
             var output = Mustache.render(template, song);
-            $(output).insertBefore($(selector));
+            $(output).insertAfter($(selector));
         });
     }
 

@@ -2,23 +2,43 @@
     <div id="genre-form">
         <label for="genre-choose">Choose genre: </label>
         <select id="genre-choose">
-            {{#genre}}
-            <option value="rock">Rock</option>
-            <option value="disco">Disco</option>
-            <option value="pop">Pop</option>
-            <option value="pop-folk">Pop-folk</option>
+            {{#genres}}
+            <option id=" {{objectId}} " value="{{name}}">{{name}}</option>
+            {{/genres}}
         </select>
         <button id="choose-genre">Submit</button>
     </div>
     <ul>
         {{#results}}
         <li data-id="{{objectId}}">
-            <div>Song: <a href="{{song.url}}">{{song.url}}</a></div>
-            <div>Title: {{title}}</div>
-            <div>Like: {{like}}</div>
-            <div>Genre: {{genre}}</div>
-            <!--<button class="like-songs-btn">Like</button>-->
-            <!--<button class="delete-songs-btn">X</button>-->
+            <h3>{{title}}</h3>
+            <div class="comments">
+                {{#comments}}
+                <div class="current-comment" data-id="{{objectId}}">
+                    <span> {{content}}</span><br/>
+                    <span data-id="by.objectId">by {{by.username}}</span>
+                    <span>on {{createdAt}}</span>
+                </div>
+                {{/comments}}
+                <textarea name="add-Comment" id="add-comment" cols="30" rows="3"></textarea>
+                <button class="add-comment-btn">Add Comment</button>
+            </div>
+            <div class="left-div">
+                <audio controls>
+                    <source src="{{file.url}}" type="audio/mpeg">
+                </audio>
+                <div><a href="{{file.url}}" download="{{title}}">Download</a></div>
+                <div>Genre: {{genre.name}}</div>
+                <div>{{like}} people like this</div>
+            </div>
+            <button class="like-songs-btn">Like</button>
+            <button class="delete-songs-btn">Delete</button>
+            <select class="playlist-choose">
+                {{#playlists}}
+                <option id="{{objectId}}" value="{{name}}">{{name}}</option>
+                {{/playlists}}
+            </select>
+            <button class="add-to-playlist">Add to playlist</button>
         </li>
         {{/results}}
     </ul>

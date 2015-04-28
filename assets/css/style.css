@@ -292,3 +292,24 @@ img{
     margin-top: 0;
     margin-bottom: 15px;
 }
+
+.song{
+    border-radius: 20px;
+    margin-top: 50px;
+    margin-right: 70px;
+    padding: 10px;
+    height: auto;
+}
+.song:nth-child(odd){
+    background-color: #D5FC68;
+}
+.song:nth-child(even){
+    background-color: #B7E49D;
+}
+.comments{
+    display: inline-block;
+    float: right;
+}
+#wrapper{
+    padding-bottom: 40px;
+}

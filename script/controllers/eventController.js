@@ -182,7 +182,7 @@ app.eventController=(function(){
                 });
 
             var queryString='?where=' + genre;
-            _this._data.songs.getAll('?include=genre')
+            _this._data.songs.getAll(queryString + '&include=genre')
                 .then(function(data) {
                     console.log(data.results);
                     data.results.forEach(function(song) {
@@ -386,7 +386,6 @@ app.eventController=(function(){
 
                     _this._data.comments.getCommentsByPlayList(playListId)
                         .then(function (comments) {
-                            console.log(comments.results);
                             playList = {
                                 objectId: playListId,
                                 comments: comments.results,
@@ -419,6 +418,7 @@ app.eventController=(function(){
                 })
         });
     };
+
 
     var attachLikePlayListHandler = function(selector) {
         var _this = this;
