@@ -1,8 +1,9 @@
 var app = app || {};
 
 app.songView = (function() {
-    function render(song, selector, template, comments) {
+    function render(song, selector, template, comments, playLists) {
         song['comments'] = comments.results;
+        song['playlists'] = playLists.results;
         $.get(template, function (template) {
             var output = Mustache.render(template, song);
             $(output).insertBefore($(selector));
@@ -10,8 +11,8 @@ app.songView = (function() {
     }
 
     return {
-        render: function (song, selector, template, comments) {
-            render(song, selector, template, comments);
+        render: function (song, selector, template, comments, playLists) {
+            render(song, selector, template, comments, playLists);
         }
     };
 }());

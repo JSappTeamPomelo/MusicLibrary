@@ -20,6 +20,18 @@ app.playListModel = (function () {
         return this._ajaxRequester.post(this._serviceUrl, song, this._headers);
     };
 
+    PlayList.prototype.createPlayList = function(playList) {
+        return this._ajaxRequester.post(this._serviceUrl, playList, this._headers);
+    };
+
+    PlayList.prototype.getAllPlayLists = function(queryString) {
+        return this._ajaxRequester.get(this._serviceUrl + queryString, this._headers);
+    };
+
+    PlayList.prototype.getMyPlayLists = function() {
+        return this._ajaxRequester.get(this._serviceUrl + '?where={"ofUser":{"__type":"Pointer","className":"_User","objectId":"' + sessionStorage['currentUserId'] + '"}}', this._headers);
+    };
+
     return {
         load: function(baseUrl,ajaxRequester) {
             return new PlayList(baseUrl,ajaxRequester);

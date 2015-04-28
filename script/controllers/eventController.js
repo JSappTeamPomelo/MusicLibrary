@@ -8,16 +8,18 @@ app.eventController=(function(){
     EventController.prototype.attachEventHandlers = function() {
         var selector='#wrapper';
         var otherSelector='#currentUser';
-        attachLoginHandler.call(this,selector);
-        attachRegisterHandler.call(this,selector);
-        attachCreateSongHandler.call(this,selector);
-        attachDeleteSongHandler.call(this,selector);
-        attachLikeSongHandler.call(this,selector);
-        attachLogoutHandler.call(this,otherSelector);
-        attachGetSongByGenre.call(this,selector);
+        attachLoginHandler.call(this, selector);
+        attachRegisterHandler.call(this, selector);
+        attachCreateSongHandler.call(this, selector);
+        attachDeleteSongHandler.call(this, selector);
+        attachLikeSongHandler.call(this, selector);
+        attachLogoutHandler.call(this, otherSelector);
+        attachGetSongByGenre.call(this, selector);
         attachAddCommentHandler.call(this, selector);
-        attachAddToPlayList.call(this,selector);
-        attachAddGenre.call(this,selector);
+        attachAddToPlayList.call(this, selector);
+        attachAddGenre.call(this, selector);
+        attachCreatePlayList.call(this, selector);
+        attachLoadPlayList.call(this, selector);
     };
 
     var attachLogoutHandler = function(selector) {
@@ -60,13 +62,6 @@ app.eventController=(function(){
             var password=$('#password').val();
             _this._data.users.register(username,password)
                 .then(function(data) {
-                    var playList={
-                        "name": data.objectId
-                    };
-                    _this._data.playList.addToPlayList(playList)
-                        .then(function(data) {
-                            alert('you have playlist');
-                        });
                     alert('You are registered successfully ' + username + ' Go to login page');
                     location.reload();
                 },function(error) {
@@ -79,24 +74,22 @@ app.eventController=(function(){
         var _this = this;
         $(selector).on('click', '.add-to-playlist', function() {
             if (sessionStorage['sessionToken']) {
-                var objectId=$(this).parent().data('id');
-                var song={"RelationSong": {
-                    "__op": "AddRelation",
-                    "objects": [{"__type": "Pointer",
-                        "className": "Song",
-                        "objectId": objectId}]
-                }};
-                var newString = '?where={"name":"' + sessionStorage['currentUserId'] + '"}';
-                _this._data.playList.getAllRelationSong(newString)
+                var objectId=$(this).parent().data('id'),
+                    song={"RelationSong": {
+                        "__op": "AddRelation",
+                        "objects": [{"__type": "Pointer",
+                            "className": "Song",
+                            "objectId": objectId}]
+                    }},
+                    previous = $(this).prev(),
+                    playListId = previous.children('.playlist-choose option:selected').attr('id');
+
+                _this._data.playList.editRelation(song, playListId)
                     .then(function(data) {
-                        console.log(data.results['0'].objectId);
-                        _this._data.playList.editRelation(song, data.results['0'].objectId)
-                            .then(function(data) {
-                                alert('the song is add to playlist');
-                            },function(error) {
-                                console.log('song can not be add to playlist');
-                            })
-                    })
+                        alert('the song is add to playlist');
+                    },function(error) {
+                        console.log('song can not be add to playlist');
+                    });
             }
             else{
                 alert('Login pls');
@@ -131,24 +124,32 @@ app.eventController=(function(){
                         }
                     };
 
-                _this._data.songs.add(song)
-                    .then(function(data) {
-                        _this._data.songs.getById(data.objectId)
-                            .then(function(song){
-                                _this._data.comments.getCommentsBySong(song.objectId)
-                                    .then(function(comments) {
-                                        app.songView.render(song, '#create-song-btn', './templates/song.html', comments);
-                                    }, function(error) {
+                    var ext = $('#song').val().split('.').pop().toLowerCase();
+
+                    if (file.size/1024/1024 > 10) {
+                        alert('The file must be less than 10 MB');
+                    } else if ($.inArray(ext, ['mp3', 'wav']) == -1) {
+                        alert('The file extension must be mp3 or wav');
+                    } else {
+                        _this._data.songs.add(song)
+                            .then(function(data) {
+                                _this._data.songs.getById(data.objectId)
+                                    .then(function(song){
+                                        _this._data.comments.getCommentsBySong(song.objectId)
+                                            .then(function(comments) {
+                                                app.songView.render(song, '#create-song-btn', './templates/song.html', comments);
+                                            }, function(error) {
+                                                console.log(error);
+                                            });
+                                    },function(error) {
                                         console.log(error);
                                     });
-                            },function(error) {
-                                console.log(error);
-                            });
-                        $('#song').val('');
-                        $('#title').val('');
-                    }, function(error) {
-                        console.log(error)
-                    })
+                                $('#song').val('');
+                                $('#title').val('');
+                            }, function(error) {
+                                console.log(error)
+                            })
+                    }
             }
             else {
                 $(selector).load('./templates/plsLogin.html')
@@ -186,7 +187,12 @@ app.eventController=(function(){
                     data.results.forEach(function(song) {
                         _this._data.comments.getCommentsBySong(song.objectId)
                             .then(function(comments) {
-                                app.songView.render(song, '#endOfSongs', './templates/song.html', comments);
+                                _this._data.playList.getMyPlayLists()
+                                    .then(function(playlists) {
+                                        app.songView.render(song, '#endOfSongs', './templates/song.html', comments, playlists);
+                                    }, function(error) {
+                                        console.log(error);
+                                    });
                             }, function(error) {
                                 console.log(error);
                             });
@@ -326,6 +332,75 @@ app.eventController=(function(){
                     console.log(error);
                 })
         })
+    };
+
+    var attachCreatePlayList = function(selector) {
+        var _this=this;
+        $(selector).on('click', '#create-playList', function(ev) {
+            if (sessionStorage['sessionToken']) {
+                var userObjectId = sessionStorage['currentUserId'],
+                    name = $('#newPlayListName').val(),
+                    playList = {
+                    "name": name,
+                    "ofUser": {
+                        "__type": "Pointer",
+                        "className": "_User",
+                        "objectId": userObjectId
+                    }
+                };
+
+                _this._data.playList.createPlayList(playList)
+                    .then(function (data) {
+                        alert('new playlist was created');
+                    });
+            }
+            else {
+                alert('Login pls');
+            }
+        });
+    };
+
+    var attachLoadPlayList = function(selector) {
+        var _this = this;
+        $(selector).on('click', '.playlist-item', function(ev) {
+            var playListId = $(this).attr('id');
+            _this._data.playList.getAllPlayLists('/' + playListId)
+                .then(function (data) {
+                    var playList = {};
+
+                    _this._data.comments.getCommentsByPlayList(playListId)
+                        .then(function (comments) {
+                            console.log(comments.results);
+                            playList = {
+                                objectId: playListId,
+                                comments: comments.results
+                            };
+
+                            app.playListView.render(selector, playList);
+
+                            var secondQueryString = '?where={"$relatedTo":{"object":{"__type":"Pointer","className":"PlayList","objectId":"'
+                                + playListId + '"},"key":"RelationSong"}}';
+                            _this._data.songs.getAll(secondQueryString + '&include=genre')
+                                .then(function (data) {
+                                    data.results.forEach(function (song) {
+                                        _this._data.comments.getCommentsBySong(song.objectId)
+                                            .then(function (comments) {
+                                                _this._data.playList.getMyPlayLists()
+                                                    .then(function(playlists) {
+                                                        app.songView.render(song, 'div.comments', './templates/songInPlayList.html', comments, playlists);
+                                                    }, function(error) {
+                                                        console.log(error);
+                                                    })
+                                            }, function (error) {
+                                                console.log(error);
+                                            });
+                                    });
+                                });
+                        }, function (error) {
+                            console.log(error);
+                        });
+                })
+        });
     };
 
     return{

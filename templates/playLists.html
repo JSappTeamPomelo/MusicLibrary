@@ -1,0 +1,11 @@
+<div class="play-list" data-id="{{objectId}}">
+    <h2>Play Lists</h2>
+    <ul>
+        {{#results}}
+        <li id="{{objectId}}" class="playlist-item">{{name}}</li>
+        {{/results}}
+    </ul>
+    <input type="text" id="newPlayListName" placeholder="Enter new play list name"/>
+    <button id="create-playList">Add PlayList</button>
+    <div id="currentPlayList"></div>
+</div>

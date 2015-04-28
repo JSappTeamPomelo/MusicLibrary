@@ -23,40 +23,13 @@ app.controller=(function(){
         var _this=this;
 
         if(sessionStorage['sessionToken']){
-            var secondString='?where={"name":"' + sessionStorage['currentUserId'] + '"}'
-            this._data.playList.getAllRelationSong(secondString)
-                .then(function(data){
-                    var playListId = data.results['0'].objectId,
-                        playList = {};
-
-                    _this._data.comments.getCommentsByPlayList(playListId)
-                        .then(function (comments) {
-                            console.log(comments.results);
-                            playList = {
-                                objectId: playListId,
-                                comments: comments.results
-                            };
-
-                            app.playListView.render(selector, playList);
-
-                            console.log(data.results['0'].objectId);
-                            var secondQueryString='?where={"$relatedTo":{"object":{"__type":"Pointer","className":"PlayList","objectId":"'
-                                + data.results['0'].objectId + '"},"key":"RelationSong"}}'
-                            _this._data.songs.getAll(secondQueryString + '&include=genre')
-                                .then(function(data){
-                                    data.results.forEach(function(song) {
-                                        _this._data.comments.getCommentsBySong(song.objectId)
-                                            .then(function(comments) {
-                                                app.songView.render(song, 'div.comments', './templates/songInPlayList.html', comments);
-                                            }, function(error) {
-                                                console.log(error);
-                                            });
-                                    });
-                                });
-                        }, function(error) {
-                           console.log(error);
-                        });
-                })
+            // to get only current user playlists: _this._data.playList.getAllPlayLists('?where={"ofUser":{"__type":"Pointer","className":"_User","objectId":"' + sessionStorage['currentUserId'] + '"}}')
+            _this._data.playList.getAllPlayLists('')
+                .then(function(myPlayLists){
+                    app.playListsView.render(selector, myPlayLists);
+                }, function(error) {
+                    console.log(error);
+                });
         }
         else{
             $(selector).load('./templates/plsLogin.html')
@@ -92,7 +65,12 @@ app.controller=(function(){
                 results.forEach(function(song) {
                     _this._data.comments.getCommentsBySong(song.objectId)
                         .then(function(comments) {
-                            app.songView.render(song, '#create-song-btn', './templates/song.html', comments);
+                            _this._data.playList.getMyPlayLists()
+                                .then(function(playlists) {
+                                    app.songView.render(song, '#create-song-btn', './templates/song.html', comments, playlists);
+                                }, function(error) {
+                                    console.log(error);
+                                })
                         }, function(error) {
                             console.log(error);
                         });

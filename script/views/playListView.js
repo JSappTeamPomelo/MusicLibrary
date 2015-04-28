@@ -2,9 +2,9 @@ var app = app || {};
 
 app.playListView = (function() {
     function render(selector, playList) {
-        $.get('./templates/playlist.html',function(template){
+        $.get('./templates/playList.html',function(template){
             var output=Mustache.render(template, playList);
-            $(selector).html(output);
+            $('#currentPlayList').html(output);
         });
     }
 

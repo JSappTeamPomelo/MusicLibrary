@@ -19,5 +19,10 @@
     </div>
     <button class="like-songs-btn">Like</button>
     <button class="delete-songs-btn">X</button>
+    <select class="playlist-choose">
+        {{#playlists}}
+        <option id="{{objectId}}" value="{{name}}">{{name}}</option>
+        {{/playlists}}
+    </select>
     <button class="add-to-playlist">Add to playlist</button>
 </div>
