@@ -375,7 +375,7 @@ app.eventController=(function(){
                             objectId: data.objectId
                         };
 
-                        app.newPlaylistView.render('ul', newPlaylist);
+                        app.newPlaylistView.render('ul.ul-playlist', newPlaylist);
                         $('#newPlayListName').val('');
                     });
             }
