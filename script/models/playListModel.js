@@ -32,6 +32,15 @@ app.playListModel = (function () {
         return this._ajaxRequester.get(this._serviceUrl + '?where={"ofUser":{"__type":"Pointer","className":"_User","objectId":"' + sessionStorage['currentUserId'] + '"}}', this._headers);
     };
 
+    PlayList.prototype.edit=function(playList,objectId){
+        var url=this._serviceUrl + '/'+objectId;
+        return this._ajaxRequester.put(url, playList, this._headers)
+    };
+
+    PlayList.prototype.getById = function(objectId) {
+        return this._ajaxRequester.get(this._serviceUrl + '/' + objectId, this._headers);
+    };
+
     return {
         load: function(baseUrl,ajaxRequester) {
             return new PlayList(baseUrl,ajaxRequester);

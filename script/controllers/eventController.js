@@ -20,6 +20,7 @@ app.eventController=(function(){
         attachAddGenre.call(this, selector);
         attachCreatePlayList.call(this, selector);
         attachLoadPlayList.call(this, selector);
+        attachLikePlayListHandler.call(this, selector);
     };
 
     var attachLogoutHandler = function(selector) {
@@ -355,6 +356,7 @@ app.eventController=(function(){
                     name = $('#newPlayListName').val(),
                     playList = {
                     "name": name,
+                    "like": 0,
                     "ofUser": {
                         "__type": "Pointer",
                         "className": "_User",
@@ -379,14 +381,16 @@ app.eventController=(function(){
             var playListId = $(this).attr('id');
             _this._data.playList.getAllPlayLists('/' + playListId)
                 .then(function (data) {
-                    var playList = {};
+                    var playList = {},
+                        likes = data.like;
 
                     _this._data.comments.getCommentsByPlayList(playListId)
                         .then(function (comments) {
                             console.log(comments.results);
                             playList = {
                                 objectId: playListId,
-                                comments: comments.results
+                                comments: comments.results,
+                                like: likes
                             };
 
                             app.playListView.render(selector, playList);
@@ -414,6 +418,40 @@ app.eventController=(function(){
                         });
                 })
         });
+    };
+
+    var attachLikePlayListHandler = function(selector) {
+        var _this = this;
+        $(selector).on('click', '.like-playlists-btn', function(ev) {
+            if (sessionStorage['currentUserId'] ) {
+                var likeConfirmed = confirm('Do you Like?');
+                if (likeConfirmed) {
+                    var objectId = $(this).next().data('id');
+                    var obj;
+                    _this._data.playList.getById(objectId)
+                        .then(function (data) {
+                            var like = data.like + 1;
+                            var playlist = {
+                                like: like
+                            };
+                            if(localStorage[objectId]!=sessionStorage['currentUserId']+objectId){
+                                _this._data.playList.edit(playlist, objectId)
+                                    .then(function (data) {
+                                        localStorage.setItem(objectId, sessionStorage['currentUserId'] + objectId);
+                                        $('#likePlayList').html('Like: ' + like);
+                                    })
+                            }
+                            else{
+                                alert('‎you already like this playlist');
+                            }
+
+                        })
+                }
+            }
+            else{
+                alert('Please login, to like this song');
+            }
+        })
     };
 
     return{
