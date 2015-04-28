@@ -1,1 +1,10 @@
 <h1>Main Page</h1>
+<div class="play-list" data-id="{{objectId}}">
+    <h2>Top Playlists</h2>
+    <ul>
+        {{#results}}
+        <li id="{{objectId}}" class="playlist-item">{{name}}</li>
+        {{/results}}
+    </ul>
+    <div id="currentPlayList"></div>
+</div>

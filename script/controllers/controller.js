@@ -35,10 +35,20 @@ app.controller=(function(){
             $(selector).load('./templates/plsLogin.html')
         }
 
-    }
+    };
 
     BaseController.prototype.loadHome=function(selector){
-        app.loadHomeView.render(selector);
+        this._data.playList.getAllPlayLists('?order=-like')
+            .then(function(topPlayLists){
+                console.log(topPlayLists);
+                var topFivePlayLists = {
+                    results: topPlayLists.results.slice(0, 5)
+                };
+                console.log(topFivePlayLists);
+                app.loadHomeView.render(selector, topFivePlayLists);
+            }, function(error) {
+                console.log(error);
+            });
     };
 
     BaseController.prototype.loadLogin=function(selector){

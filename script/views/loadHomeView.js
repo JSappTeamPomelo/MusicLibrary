@@ -1,13 +1,16 @@
 var app = app || {};
 
 app.loadHomeView = (function() {
-    function render(selector) {
-        $(selector).load('./templates/home.html')
+    function render(selector, playLists) {
+        $.get('./templates/home.html',function(template){
+            var output=Mustache.render(template, playLists);
+            $(selector).html(output);
+        });
     }
 
     return {
-        render: function (selector) {
-            render(selector);
+        render: function (selector, playLists) {
+            render(selector, playLists);
         }
     };
 }());
