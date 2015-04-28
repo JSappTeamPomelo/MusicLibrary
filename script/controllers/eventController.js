@@ -223,7 +223,7 @@ app.eventController=(function(){
                                 _this._data.songs.edit(song, objectId)
                                     .then(function (data) {
                                         localStorage.setItem(objectId,sessionStorage['currentUserId']+objectId);
-                                        location.reload();
+                                        $("div[data-id='" + objectId + "'] div.like").html('Like: ' + like);
                                     })
                             }
                             else{

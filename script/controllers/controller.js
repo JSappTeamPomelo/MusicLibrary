@@ -20,31 +20,20 @@ app.controller=(function(){
     };
 
     BaseController.prototype.loadPlaylist=function(selector){
-        var _this=this;
-
-        if(sessionStorage['sessionToken']){
-            // to get only current user playlists: _this._data.playList.getAllPlayLists('?where={"ofUser":{"__type":"Pointer","className":"_User","objectId":"' + sessionStorage['currentUserId'] + '"}}')
-            _this._data.playList.getAllPlayLists('')
-                .then(function(myPlayLists){
-                    app.playListsView.render(selector, myPlayLists);
-                }, function(error) {
-                    console.log(error);
-                });
-        }
-        else{
-            $(selector).load('./templates/plsLogin.html')
-        }
-
+        this._data.playList.getAllPlayLists('')
+            .then(function(myPlayLists){
+                app.playListsView.render(selector, myPlayLists);
+            }, function(error) {
+                console.log(error);
+            });
     };
 
     BaseController.prototype.loadHome=function(selector){
         this._data.playList.getAllPlayLists('?order=-like')
             .then(function(topPlayLists){
-                console.log(topPlayLists);
                 var topFivePlayLists = {
                     results: topPlayLists.results.slice(0, 5)
                 };
-                console.log(topFivePlayLists);
                 app.loadHomeView.render(selector, topFivePlayLists);
             }, function(error) {
                 console.log(error);
