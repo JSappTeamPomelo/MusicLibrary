@@ -48,8 +48,7 @@ app.eventController=(function(){
                     $('#register-form').hide();
                     var link=$('<a href="#">Logout<a>').attr('id', 'logout');
                     $('<div>').prependTo($('#currentUser')).text('Hi ' + sessionStorage['currentUser'] + ' ').append(link);
-                    app.router.run('#/Songs');
-                    //window.history.replaceState('Songs','Songs','#/songs')
+                    window.location.href = 'index.html#/';
                 },function(error) {
                     $('#login-form p').slideDown();
                 })
@@ -64,7 +63,7 @@ app.eventController=(function(){
             _this._data.users.register(username,password)
                 .then(function(data) {
                     alert('You are registered successfully ' + username + ' Go to login page');
-                    location.reload();
+                    window.location.href = 'index.html#/login';
                 },function(error) {
                     $('#register-form p').slideDown();
                 })
@@ -138,7 +137,12 @@ app.eventController=(function(){
                                     .then(function(song){
                                         _this._data.comments.getCommentsBySong(song.objectId)
                                             .then(function(comments) {
-                                                app.songView.render(song, '#create-song-btn', './templates/song.html', comments);
+                                                _this._data.playList.getMyPlayLists()
+                                                    .then(function(playlists) {
+                                                        app.songView.render(song, '#create-song-btn', './templates/song.html', comments, playlists);
+                                                    }, function(error) {
+                                                        console.log(error);
+                                                    });
                                             }, function(error) {
                                                 console.log(error);
                                             });
@@ -223,7 +227,7 @@ app.eventController=(function(){
                                 _this._data.songs.edit(song, objectId)
                                     .then(function (data) {
                                         localStorage.setItem(objectId,sessionStorage['currentUserId']+objectId);
-                                        location.reload();
+                                        $("div[data-id='" + objectId + "'] div.like").html('Like: ' + like);
                                     })
                             }
                             else{
@@ -366,7 +370,13 @@ app.eventController=(function(){
 
                 _this._data.playList.createPlayList(playList)
                     .then(function (data) {
-                        alert('new playlist was created');
+                        var newPlaylist = {
+                            name: name,
+                            objectId: data.objectId
+                        };
+
+                        app.newPlaylistView.render('ul.ul-playlist', newPlaylist);
+                        $('#newPlayListName').val('');
                     });
             }
             else {
