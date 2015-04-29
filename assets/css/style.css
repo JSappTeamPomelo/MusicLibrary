@@ -313,3 +313,7 @@ img{
 #wrapper{
     padding-bottom: 40px;
 }
+
+li.playlist-item {
+    cursor: pointer;
+}

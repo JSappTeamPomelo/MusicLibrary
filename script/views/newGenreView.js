@@ -5,6 +5,7 @@ app.newGenreView = (function() {
         $.get('./templates/newGenre.html',function(template){
             var output = Mustache.render(template, data);
             $(selector).append(output);
+            $('#genreName').val('');
         });
     }
 

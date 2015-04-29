@@ -74,7 +74,7 @@ app.eventController=(function(){
         var _this = this;
         $(selector).on('click', '.add-to-playlist', function() {
             if (sessionStorage['sessionToken']) {
-                var objectId=$(this).parent().data('id'),
+                var objectId=$(this).parent().attr('data-id'),
                     song={"RelationSong": {
                         "__op": "AddRelation",
                         "objects": [{"__type": "Pointer",
@@ -157,7 +157,7 @@ app.eventController=(function(){
                     }
             }
             else {
-                $(selector).load('./templates/plsLogin.html')
+                alert('Login pls');
             }
         });
 
@@ -215,7 +215,7 @@ app.eventController=(function(){
             if(sessionStorage['currentUserId']) {
                 var likeConfirmed = confirm('Do you Like?');
                 if (likeConfirmed) {
-                    var objectId = $(this).parent().data('id');
+                    var objectId = $(this).parent().attr('data-id');
                     var obj;
                     _this._data.songs.getById(objectId)
                         .then(function (data) {
@@ -227,7 +227,7 @@ app.eventController=(function(){
                                 _this._data.songs.edit(song, objectId)
                                     .then(function (data) {
                                         localStorage.setItem(objectId,sessionStorage['currentUserId']+objectId);
-                                        $("div[data-id='" + objectId + "'] div.like").html('Like: ' + like);
+                                        $("div[data-id='" + objectId + "'] div.like").html(like + ' people like this');
                                     })
                             }
                             else{
@@ -248,7 +248,7 @@ app.eventController=(function(){
         $(selector).on('click','.delete-songs-btn',function(ev) {
             var deleteConfirmed = confirm('Do you want to delete');
             if (deleteConfirmed) {
-                var objectId = $(this).parent().data('id');
+                var objectId = $(this).parent().attr('data-id');
                 _this._data.songs.delete(objectId)
                     .then(function(data) {
                         $(ev.target).parent().remove();
@@ -325,7 +325,7 @@ app.eventController=(function(){
                     });
             }
             else {
-                $(selector).load('./templates/plsLogin.html')
+                alert('Login pls');
             }
         })
     };
@@ -413,7 +413,7 @@ app.eventController=(function(){
                                             .then(function (comments) {
                                                 _this._data.playList.getMyPlayLists()
                                                     .then(function(playlists) {
-                                                        app.songView.render(song, 'div.comments', './templates/songInPlayList.html', comments, playlists);
+                                                        app.songView.render(song, 'div.playlist-comments', './templates/songInPlayList.html', comments, playlists);
                                                     }, function(error) {
                                                         console.log(error);
                                                     })
@@ -436,7 +436,7 @@ app.eventController=(function(){
             if (sessionStorage['currentUserId'] ) {
                 var likeConfirmed = confirm('Do you Like?');
                 if (likeConfirmed) {
-                    var objectId = $(this).next().data('id');
+                    var objectId = $(this).next().attr('data-id');
                     var obj;
                     _this._data.playList.getById(objectId)
                         .then(function (data) {
@@ -448,7 +448,7 @@ app.eventController=(function(){
                                 _this._data.playList.edit(playlist, objectId)
                                     .then(function (data) {
                                         localStorage.setItem(objectId, sessionStorage['currentUserId'] + objectId);
-                                        $('#likePlayList').html('Like: ' + like);
+                                        $('#likePlayList').html(like + ' people like this');
                                     })
                             }
                             else{

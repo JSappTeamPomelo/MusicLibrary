@@ -5,6 +5,7 @@ app.playListsView = (function() {
         $.get('./templates/playLists.html',function(template){
             var output=Mustache.render(template, playLists);
             $(selector).html(output);
+            $("li.playlist-item").css({"cursor":"pointer"});
         });
     }
 
